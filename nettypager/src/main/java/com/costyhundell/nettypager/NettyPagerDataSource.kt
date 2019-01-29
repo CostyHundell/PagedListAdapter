@@ -11,7 +11,7 @@ import io.reactivex.schedulers.Schedulers
 
 abstract class NettyPagerDataSource<T, Int, S> : PageKeyedDataSource<Int, S>() {
 
-    var subscriber: Single<T>? = null
+    var single: Single<T>? = null
     var observable: Observable<T>? = null
 
     private var retryCompletable: Completable? = null
@@ -19,8 +19,8 @@ abstract class NettyPagerDataSource<T, Int, S> : PageKeyedDataSource<Int, S>() {
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, S>) {
         val disposable = when {
-            subscriber != null -> {
-                subscriber!!.subscribeOn(Schedulers.io())
+            single != null -> {
+                single!!.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ response ->
                         setRetryAction(Action { loadInitial(params, callback) })
@@ -48,8 +48,8 @@ abstract class NettyPagerDataSource<T, Int, S> : PageKeyedDataSource<Int, S>() {
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, S>) {
         val disposable = when {
-            subscriber != null -> {
-                subscriber!!
+            single != null -> {
+                single!!
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ response ->
