@@ -1,21 +1,34 @@
 package com.thepeafactory.pagedlistadapterdemo
 
+import com.costyhundell.nettypager.FilterPageKeyedDataSource
 
-class NewsArticleDataSource: FilterPageKeyedDataSource<NewsResponse, Int, NewsArticle>() {
+
+class NewsArticleDataSource : FilterPageKeyedDataSource<NewsResponse, Int, NewsArticle>() {
 
     init {
-        val service = NewsAPIService()
-        setSubscriber(service.getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey))
+        subscriber = NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
     }
 
-    override fun onLoadInitialDataSuccess(callback: LoadInitialCallback<Int, NewsArticle>, response: NewsResponse) {
-        postInitial(callback, response.articles, PAGE_SIZE+1)
+    override fun onLoadInitialSuccess(callback: LoadInitialCallback<Int, NewsArticle>, response: NewsResponse) {
+        val list = response.articles.filter {
+            it.source.name == "Lifehacker.com"
+        }
+        postInitial(callback, list, PAGE_SIZE + 1)
     }
 
     override fun onLoadAfterSuccess(callback: LoadCallback<Int, NewsArticle>, response: NewsResponse, params: LoadParams<Int>) {
         postAfter(callback, response.articles, params.key + 1)
     }
 
+    override fun onLoadAfterError(error: Throwable) {
+        error.printStackTrace()
+        retry()
+    }
+
+    override fun onLoadInitialError(error: Throwable) {
+        error.printStackTrace()
+        retry()
+    }
 
     companion object {
         const val PAGE_SIZE = 25
