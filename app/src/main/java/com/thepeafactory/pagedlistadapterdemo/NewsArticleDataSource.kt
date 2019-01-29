@@ -34,7 +34,7 @@ class NewsArticleDataSource: PageKeyedDataSource<Int, NewsArticle>() {
     }
 
     companion object {
-        private const val PAGE_SIZE = 25
+        const val PAGE_SIZE = 25
         private const val FIRST_PAGE = 1
     }
 }
