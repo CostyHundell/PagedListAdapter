@@ -1,9 +1,9 @@
 package com.thepeafactory.pagedlistadapterdemo
 
-import com.costyhundell.nettypager.FilterPageKeyedDataSource
+import com.costyhundell.nettypager.NettyPagerDataSource
 
 
-class NewsArticleDataSource : FilterPageKeyedDataSource<NewsResponse, Int, NewsArticle>() {
+class NewsArticleDataSource : NettyPagerDataSource<NewsResponse, Int, NewsArticle>() {
 
     init {
         subscriber = NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)

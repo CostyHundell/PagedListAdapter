@@ -9,7 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 
-abstract class FilterPageKeyedDataSource<T, Int, S> : PageKeyedDataSource<Int, S>() {
+abstract class NettyPagerDataSource<T, Int, S> : PageKeyedDataSource<Int, S>() {
 
     var subscriber: Single<T>? = null
     var observable: Observable<T>? = null
