@@ -13,7 +13,7 @@ class NewsListViewModel:ViewModel(), LifecycleOwner {
     private var newsArticleDataSourceFactory = NewsArticleDataSourceFactory()
 
     private val config = PagedList.Config.Builder().apply {
-        setEnablePlaceholders(true)
+        setEnablePlaceholders(false)
         setPageSize(NewsArticleDataSource.PAGE_SIZE)
     }.build()
 

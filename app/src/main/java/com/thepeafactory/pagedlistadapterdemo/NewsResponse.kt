@@ -15,5 +15,5 @@ data class NewsArticle(val source: Source,
                         val publishedAt: String,
                         val content: String)
 
-data class Source(val id: String,
+data class Source(val id: String?,
                   val name: String)

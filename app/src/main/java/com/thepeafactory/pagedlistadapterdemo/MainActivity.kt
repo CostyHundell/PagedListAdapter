@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
 
         news_list_rv.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            this.adapter = adapter
         }
 
         ViewModelProviders.of(this).get(NewsListViewModel::class.java)
@@ -25,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             .observe(this, Observer { items ->
                 adapter.submitList(items)
             })
+        news_list_rv.adapter = adapter
 
     }
 
