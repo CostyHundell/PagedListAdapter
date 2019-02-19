@@ -11,21 +11,24 @@ class NewsArticleDataSource : NettyPagerDataSource<NewsResponse>() {
     }
 
     override fun onLoadInitialSuccess(callback: LoadInitialCallback<Int, NettyItem>, response: NewsResponse) {
-//        val list = response.articles.filter {
-//            it.source.name == "Lifehacker.com"
-//        }
 
-        val list: MutableList<NettyItem> = response.articles.toMutableList()
-
-        list.listIterator(5).add(Odds("Bet365"))
+        val list = response.articles.mapIndexed { index, newsArticle ->
+            if (index % 5 == 0)
+                Odds("Bet365")
+            else
+                newsArticle
+        }
 
         postInitial(callback, list, PAGE_SIZE + 1)
     }
 
     override fun onLoadAfterSuccess(callback: LoadCallback<Int, NettyItem>, response: NewsResponse, params: LoadParams<Int>) {
-        val list: MutableList<NettyItem> = response.articles.toMutableList()
-
-        list.listIterator(5).add(Odds("Bet365"))
+        val list = response.articles.mapIndexed { index, newsArticle ->
+            if (index % 5 == 0)
+                Odds("Bet365")
+            else
+                newsArticle
+        }
         postAfter(callback, list, params.key + 1)
     }
 

@@ -3,25 +3,39 @@ package com.thepeafactory.pagedlistadapterdemo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.costyhundell.nettypager.NettyItem
+import com.costyhundell.nettypager.NettyPagedListAdapter
 import kotlinx.android.synthetic.main.news_article.view.*
 
-class NewsPagedListAdapter: PagedListAdapter<NewsArticle, NewsPagedListAdapter.ViewHolder>(DIFF_CALLBACK) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.news_article, parent, false))
+class NewsPagedListAdapter: NettyPagedListAdapter<RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when(viewType) {
+        Constant.NEWS_ARTICLE_TYPE -> ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.news_article, parent, false))
+        else -> OddsHolder(LayoutInflater.from(parent.context).inflate(R.layout.news_article, parent, false))
+    }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = getItem(position)
+        when (item) {
+            is NewsArticle -> {
+                holder as ViewHolder
+                holder.bind(item)
+            }
+            is Odds -> {
+                holder as OddsHolder
+                holder.bind(item)
+            }
+        }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position)!!)
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NewsArticle>() {
-            override fun areItemsTheSame(oldItem: NewsArticle, newItem: NewsArticle): Boolean {
-                return oldItem.title == newItem.title
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<NettyItem>() {
+            override fun areItemsTheSame(oldItem: NettyItem, newItem: NettyItem): Boolean {
+                return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: NewsArticle, newItem: NewsArticle): Boolean {
+            override fun areContentsTheSame(oldItem: NettyItem, newItem: NettyItem): Boolean {
                 return oldItem == newItem
             }
         }
@@ -33,6 +47,13 @@ class NewsPagedListAdapter: PagedListAdapter<NewsArticle, NewsPagedListAdapter.V
         fun bind(item: NewsArticle) {
             title.text = item.title
             description.text = item.description
+        }
+    }
+
+    inner class OddsHolder(view: View): RecyclerView.ViewHolder(view) {
+        private val title = itemView.title
+        fun bind(item: Odds) {
+            title.text = item.bet
         }
     }
 }

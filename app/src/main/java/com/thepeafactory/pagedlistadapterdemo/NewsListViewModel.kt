@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
+import com.costyhundell.nettypager.NettyItem
 
 class NewsListViewModel:ViewModel(), LifecycleOwner {
     override fun getLifecycle(): Lifecycle = LifecycleRegistry(this)
@@ -17,7 +18,7 @@ class NewsListViewModel:ViewModel(), LifecycleOwner {
         setPageSize(NewsArticleDataSource.PAGE_SIZE)
     }.build()
 
-    private var newsArticleList = LivePagedListBuilder<Int, NewsArticle>(newsArticleDataSourceFactory, config).build()
+    private var newsArticleList = LivePagedListBuilder<Int, NettyItem>(newsArticleDataSourceFactory, config).build()
 
     fun getNewsList() = newsArticleList
 }

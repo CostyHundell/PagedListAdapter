@@ -14,7 +14,9 @@ data class NewsArticle(val source: Source,
                         val url: String,
                         @SerializedName("urlToImage") val imageUrl: String,
                         val publishedAt: String,
-                        val content: String): NettyItem
+                        val content: String): NettyItem {
+    override fun getItemViewType(): Int = Constant.NEWS_ARTICLE_TYPE
+}
 
 data class Source(val id: String?,
                   val name: String)
