@@ -1,5 +1,6 @@
 package com.thepeafactory.pagedlistadapterdemo
 
+import com.costyhundell.nettypager.NettyItem
 import com.google.gson.annotations.SerializedName
 
 data class NewsResponse(val status: String,
@@ -13,7 +14,7 @@ data class NewsArticle(val source: Source,
                         val url: String,
                         @SerializedName("urlToImage") val imageUrl: String,
                         val publishedAt: String,
-                        val content: String)
+                        val content: String): NettyItem
 
 data class Source(val id: String?,
                   val name: String)
