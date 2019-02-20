@@ -6,9 +6,7 @@ import com.costyhundell.nettypager.NettyPagerDataSource
 
 class NewsArticleDataSource : NettyPagerDataSource<NewsResponse>() {
 
-    init {
-        single = NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
-    }
+    override var single = NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
 
     override fun onLoadInitialSuccess(callback: LoadInitialCallback<Int, NettyItem>, response: NewsResponse) {
 
