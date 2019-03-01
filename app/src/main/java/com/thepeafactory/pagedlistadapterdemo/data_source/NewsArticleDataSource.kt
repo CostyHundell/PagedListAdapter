@@ -1,21 +1,32 @@
-package com.thepeafactory.pagedlistadapterdemo
+package com.thepeafactory.pagedlistadapterdemo.data_source
 
 import com.costyhundell.nettypager.NettyItem
 import com.costyhundell.nettypager.NettyPagerDataSource
 import com.costyhundell.nettypager.NettyResponse
+import com.thepeafactory.pagedlistadapterdemo.BuildConfig
+import com.thepeafactory.pagedlistadapterdemo.DemoConstants
+import com.thepeafactory.pagedlistadapterdemo.api_service.BetAPIService
+import com.thepeafactory.pagedlistadapterdemo.api_service.NewsAPIService
+import com.thepeafactory.pagedlistadapterdemo.data_classes.BetResponse
+import com.thepeafactory.pagedlistadapterdemo.data_classes.NewsResponse
 import io.reactivex.Single
 import java.util.*
 
 class NewsArticleDataSource : NettyPagerDataSource(NUMBER_OF_APIS) {
 
     override var single =
-        NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKeyNews)
+        NewsAPIService().getService().getEverything(
+            CATEGORY,
+            PAGE_SIZE,
+            FIRST_PAGE,
+            BuildConfig.ApiKeyNews
+        )
 
     var list = mutableListOf<NettyItem>()
 
     override fun onLoadInitialSuccess(callback: LoadInitialCallback<Int, NettyItem>, response: NettyResponse) {
         when (response.getResponseType()) {
-            Constant.NEWS_RESPONSE -> {
+            DemoConstants.NEWS_RESPONSE -> {
                 response as NewsResponse
                 if (callsMade == 1) {
                     list = response.articles.toMutableList()
@@ -24,7 +35,7 @@ class NewsArticleDataSource : NettyPagerDataSource(NUMBER_OF_APIS) {
                     list.shuffle()
                 }
             }
-            Constant.BET_RESPONSE -> {
+            DemoConstants.BET_RESPONSE -> {
                 response as BetResponse
                 list.addAll(response.data)
                 list.shuffle()
@@ -35,7 +46,8 @@ class NewsArticleDataSource : NettyPagerDataSource(NUMBER_OF_APIS) {
         if (callsMade == NUMBER_OF_APIS) {
             postInitial(callback, list, PAGE_SIZE + 1)
         } else {
-            setNextInitialCall(true, PAGE_SIZE, manageApis(), callback).runNext()
+            setNextInitialCall(true,
+                PAGE_SIZE, manageApis(), callback).runNext()
         }
     }
 
@@ -45,7 +57,7 @@ class NewsArticleDataSource : NettyPagerDataSource(NUMBER_OF_APIS) {
         params: LoadParams<Int>
     ) {
         when (response.getResponseType()) {
-            Constant.NEWS_RESPONSE -> {
+            DemoConstants.NEWS_RESPONSE -> {
                 response as NewsResponse
                 if (callsMade == 1) {
                     list = response.articles.toMutableList()
@@ -72,7 +84,12 @@ class NewsArticleDataSource : NettyPagerDataSource(NUMBER_OF_APIS) {
 
     override fun manageApis(): Single<NettyResponse> = when (callsMade) {
         1 -> BetAPIService().getService().getSport(BuildConfig.ApiKeyBet)
-        else -> NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKeyNews)
+        else -> NewsAPIService().getService().getEverything(
+            CATEGORY,
+            PAGE_SIZE,
+            FIRST_PAGE,
+            BuildConfig.ApiKeyNews
+        )
     }
 
     companion object {
