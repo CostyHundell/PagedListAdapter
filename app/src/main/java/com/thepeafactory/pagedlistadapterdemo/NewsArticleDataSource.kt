@@ -2,22 +2,33 @@ package com.thepeafactory.pagedlistadapterdemo
 
 import com.costyhundell.nettypager.NettyItem
 import com.costyhundell.nettypager.NettyPagerDataSource
+import com.costyhundell.nettypager.NettyResponse
 import io.reactivex.Single
 import java.util.*
 
-class NewsArticleDataSource : NettyPagerDataSource<NewsResponse>(NUMBER_OF_APIS) {
+class NewsArticleDataSource : NettyPagerDataSource(NUMBER_OF_APIS) {
 
     override var single =
-        NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
+        NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKeyNews)
 
     var list = mutableListOf<NettyItem>()
 
-    override fun onLoadInitialSuccess(callback: LoadInitialCallback<Int, NettyItem>, response: NewsResponse) {
-        if (callsMade == 1) {
-            list = response.articles.toMutableList()
-        } else {
-            list.addAll(response.articles)
-            list.shuffle(Random())
+    override fun onLoadInitialSuccess(callback: LoadInitialCallback<Int, NettyItem>, response: NettyResponse) {
+        when (response.getResponseType()) {
+            Constant.NEWS_RESPONSE -> {
+                response as NewsResponse
+                if (callsMade == 1) {
+                    list = response.articles.toMutableList()
+                } else {
+                    list.addAll(response.articles)
+                    list.shuffle()
+                }
+            }
+            Constant.BET_RESPONSE -> {
+                response as BetResponse
+                list.addAll(response.data)
+                list.shuffle()
+            }
         }
 
 
@@ -28,19 +39,25 @@ class NewsArticleDataSource : NettyPagerDataSource<NewsResponse>(NUMBER_OF_APIS)
         }
     }
 
-    override fun onLoadAfterSuccess(callback: LoadCallback<Int, NettyItem>, response: NewsResponse, params: LoadParams<Int>) {
-        if (callsMade == 1) {
-            list = response.articles.toMutableList()
-        } else {
-            list.addAll(response.articles)
-            list.shuffle(Random())
+    override fun onLoadAfterSuccess(
+        callback: LoadCallback<Int, NettyItem>,
+        response: NettyResponse,
+        params: LoadParams<Int>
+    ) {
+        when (response.getResponseType()) {
+            Constant.NEWS_RESPONSE -> {
+                response as NewsResponse
+                if (callsMade == 1) {
+                    list = response.articles.toMutableList()
+                } else {
+                    list.addAll(response.articles)
+                    list.shuffle(Random())
+                }
+            }
         }
 
-        if (callsMade == NUMBER_OF_APIS) {
-            postAfter(callback, list, params.key + 1)
-        } else {
-            setNextAfterCall(PAGE_SIZE, params.key, manageApis(), callback).runNext()
-        }
+        postAfter(callback, list, params.key + 1)
+
     }
 
     override fun onLoadAfterError(error: Throwable) {
@@ -53,15 +70,13 @@ class NewsArticleDataSource : NettyPagerDataSource<NewsResponse>(NUMBER_OF_APIS)
         retry()
     }
 
-    override fun manageApis(): Single<NewsResponse> = when (callsMade) {
-        1 -> NewsAPIService().getService().getEverything("bitcoin", PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
-        2 -> NewsAPIService().getService().getEverything("apple", PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
-        3 -> NewsAPIService().getService().getEverything("android", PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
-        else -> NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKey)
+    override fun manageApis(): Single<NettyResponse> = when (callsMade) {
+        1 -> BetAPIService().getService().getSport(BuildConfig.ApiKeyBet)
+        else -> NewsAPIService().getService().getEverything(CATEGORY, PAGE_SIZE, FIRST_PAGE, BuildConfig.ApiKeyNews)
     }
 
     companion object {
-        const val NUMBER_OF_APIS = 4
+        const val NUMBER_OF_APIS = 2
         const val PAGE_SIZE = 25
         private const val FIRST_PAGE = 1
         private const val CATEGORY = "sport"

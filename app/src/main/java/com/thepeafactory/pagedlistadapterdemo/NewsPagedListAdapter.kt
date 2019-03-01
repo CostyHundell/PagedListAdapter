@@ -21,7 +21,7 @@ class NewsPagedListAdapter: NettyPagedListAdapter<RecyclerView.ViewHolder>(DIFF_
                 holder as ViewHolder
                 holder.bind(item)
             }
-            is Odds -> {
+            is Sport -> {
                 holder as OddsHolder
                 holder.bind(item)
             }
@@ -52,8 +52,10 @@ class NewsPagedListAdapter: NettyPagedListAdapter<RecyclerView.ViewHolder>(DIFF_
 
     inner class OddsHolder(view: View): RecyclerView.ViewHolder(view) {
         private val title = itemView.title
-        fun bind(item: Odds) {
-            title.text = item.bet
+        private val description = itemView.description
+        fun bind(item: Sport) {
+            title.text = item.display
+            description.text = item.name
         }
     }
 }
